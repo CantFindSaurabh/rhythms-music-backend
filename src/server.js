@@ -14,7 +14,7 @@ app.use(userRouter);
 app.use(mediaRouter);
 
 app.get('*', (req, res) => {
-    res.status(404).send();
+    res.status(404).send(); 
 })
 
 app.listen(PORT, () => {
