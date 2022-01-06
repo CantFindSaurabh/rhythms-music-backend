@@ -11,10 +11,10 @@ router.get('/landing-data', authMiddleware, async (req, res) => {
             newReleases: {}
         };
 
-        let response = await fetch('https://saavn.me/search?song=hindi');
+        let response = await fetch(process.env.JIO_SAAVN_API + '/search?song=hindi');
         data.newReleases.hindi = await response.json();
 
-        response = await fetch('https://saavn.me/search?song=punjabi');
+        response = await fetch(process.env.JIO_SAAVN_API + '/search?song=punjabi');
         data.newReleases.punjabi = await response.json();
 
         const artists = [
@@ -73,16 +73,16 @@ router.get('/landing-data', authMiddleware, async (req, res) => {
         ];
         data.artists = artists;
 
-        response = await fetch('https://saavn.me/search?album=album');
+        response = await fetch(process.env.JIO_SAAVN_API + '/search?album=album');
         data.albums = await response.json();
 
-        response = await fetch('https://saavn.me/search?song=2015');
+        response = await fetch(process.env.JIO_SAAVN_API + '/search?song=2015');
         data.top2015 = await response.json();
 
-        response = await fetch('https://saavn.me/search?song=2010');
+        response = await fetch(process.env.JIO_SAAVN_API + '/search?song=2010');
         data.top2010 = await response.json();
 
-        response = await fetch('https://saavn.me/search?song=old');
+        response = await fetch(process.env.JIO_SAAVN_API + '/search?song=old');
         data.old = await response.json();
 
         res.send({ ...data });

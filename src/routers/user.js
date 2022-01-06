@@ -322,4 +322,116 @@ router.delete('/users/favorites', authMiddleware, async (req, res) => {
         res.status(500).send({ error: e.message })
     }
 })
+
+router.post('/users/playlist', authMiddleware, async (req, res) => {
+    try {
+
+        req.body.title = req.body.title.toLowerCase();
+
+        let playlist = req.user.playlists.find(element => {
+            return element.title == req.body.title
+        })
+
+        // If playlist with same name already exists
+        if (playlist != null) {
+            return res.send({ error: "playlist already exists" });
+        }
+
+        req.user.playlists.push({
+            title: req.body.title,
+            songs: []
+        })
+
+        await req.user.save();
+
+        res.status(201).send({ playlists: req.user.playlists });
+
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({ error: e.message })
+    }
+})
+
+router.delete('/users/playlist', authMiddleware, async (req, res) => {
+    try {
+
+        let playlistIndex = req.user.playlists.findIndex(element => {
+            return req.body.playlistId == element._id
+        })
+
+        if (playlistIndex === -1) {
+            return res.send({ error: "playlist not found" });
+        }
+        req.user.playlists.splice(playlistIndex, 1);
+
+        await req.user.save();
+
+        res.send({ playlists: req.user.playlists });
+
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({ error: e.message });
+    }
+})
+
+router.post('/users/playlist/song', authMiddleware, async (req, res) => {
+    try {
+
+        let playlistIndex = req.user.playlists.findIndex(element => {
+            return element._id == req.body.playlistId;
+        })
+
+        if (playlistIndex == -1) {
+            return res.send({ error: "playlist not found" });
+        }
+
+        let songIndex = req.user.playlists[playlistIndex].songs.findIndex(element => {
+            return element.song_id == req.body.song.song_id;
+        })
+
+        if (songIndex != -1) {
+            return res.send({ error: "song already in this playlist" });
+        }
+
+        req.user.playlists[playlistIndex].songs.push(req.body.song);
+        await req.user.save();
+
+        res.send({ playlists: req.user.playlists });
+
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({ error: e.message });
+    }
+})
+
+router.delete('/users/playlist/song', authMiddleware, async (req, res) => {
+    try {
+
+        let playlistIndex = req.user.playlists.findIndex(element => {
+            return req.body.playlistId == element._id
+        })
+
+        if (playlistIndex == -1) {
+            return res.send({ error: "playlist not found" });
+        }
+
+        let songIndex = req.user.playlists[playlistIndex].songs.findIndex(element => {
+            return element.song_id == req.body.songId;
+        })
+
+        if (songIndex == -1) {
+            return res.send({ error: "song not in playlist" });
+        }
+
+        req.user.playlists[playlistIndex].songs.splice(songIndex, 1);
+        await req.user.save();
+
+        res.send({ playlists: req.user.playlists });
+
+    } catch (e) {
+        console.log(e);
+        res.status(500).send({ error: e.message })
+    }
+})
+
 module.exports = router;

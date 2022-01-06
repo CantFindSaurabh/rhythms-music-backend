@@ -35,7 +35,16 @@ const userSchema = new mongoose.Schema({
             required: true
         }
     }],
-    favorites: [{}]
+    favorites: [{}],
+    playlists: [{
+        title: {
+            type: String,
+            required: true,
+            lowercase: true,
+            trim: true
+        },
+        songs: []
+    }]
 })
 
 userSchema.methods.createToken = async function () {
